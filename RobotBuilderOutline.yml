@@ -13,7 +13,7 @@ Children:
     - Name: Robot Drive
       Base: Robot Drive 4
       Children:
-      - Name: leftFront
+      - Name: LeftFront
         Base: Speed Controller
         Children: []
         Properties:
@@ -35,7 +35,7 @@ Children:
             name: Output Channel (PWM)
             validators: &id005 [PWMOutput]
             value: '1'
-      - Name: leftRear
+      - Name: LeftRear
         Base: Speed Controller
         Children: []
         Properties:
@@ -57,7 +57,7 @@ Children:
             name: Output Channel (PWM)
             validators: *id005
             value: '2'
-      - Name: rightFront
+      - Name: RightFront
         Base: Speed Controller
         Children: []
         Properties:
@@ -79,7 +79,7 @@ Children:
             name: Output Channel (PWM)
             validators: *id005
             value: '3'
-      - Name: rightRear
+      - Name: RightRear
         Base: Speed Controller
         Children: []
         Properties:
@@ -115,7 +115,7 @@ Children:
           name: Right Front Motor
           type: PIDOutput
           validators: [RobotDrive4, ChildDropdownSelected]
-          value: Chassis rightFront
+          value: Chassis RightFront
         Maximum Output: !!robotbuilder.data.properties.DoubleProperty {default: 1,
           name: Maximum Output, validators: null, value: 1.0}
         Right Rear Motor Inverted: !!robotbuilder.data.properties.BooleanProperty {
@@ -127,19 +127,19 @@ Children:
           name: Right Rear Motor
           type: PIDOutput
           validators: [RobotDrive4, ChildDropdownSelected]
-          value: Chassis rightRear
+          value: Chassis RightRear
         Left Rear Motor: !!robotbuilder.data.properties.ChildSelectionProperty
           default: 1
           name: Left Rear Motor
           type: PIDOutput
           validators: [RobotDrive4, ChildDropdownSelected]
-          value: Chassis leftRear
+          value: Chassis LeftRear
         Left Front Motor: !!robotbuilder.data.properties.ChildSelectionProperty
           default: 0
           name: Left Front Motor
           type: PIDOutput
           validators: [RobotDrive4, ChildDropdownSelected]
-          value: Chassis leftFront
+          value: Chassis LeftFront
         Safety Expiration Time: !!robotbuilder.data.properties.DoubleProperty {default: 0.1,
           name: Safety Expiration Time, validators: null, value: 0.1}
     Properties:
@@ -148,7 +148,7 @@ Children:
   - Name: Climber
     Base: Subsystem
     Children:
-    - Name: arm
+    - Name: Arm
       Base: Speed Controller
       Children: []
       Properties:
@@ -170,7 +170,7 @@ Children:
           name: Output Channel (PWM)
           validators: *id005
           value: '5'
-    - Name: clamp
+    - Name: Clamp
       Base: Speed Controller
       Children: []
       Properties:
@@ -192,7 +192,7 @@ Children:
           name: Output Channel (PWM)
           validators: *id005
           value: '6'
-    - Name: winch
+    - Name: Winch
       Base: Speed Controller
       Children: []
       Properties:
@@ -220,7 +220,7 @@ Children:
   - Name: Shooter
     Base: PID Subsystem
     Children:
-    - Name: encoder
+    - Name: Encoder
       Base: Quadrature Encoder
       Children: []
       Properties:
@@ -266,7 +266,7 @@ Children:
           value: '4'
         Reverse Direction: !!robotbuilder.data.properties.BooleanProperty {default: false,
           name: Reverse Direction, validators: null, value: false}
-    - Name: controller
+    - Name: Controller
       Base: Speed Controller
       Children: []
       Properties:
@@ -296,7 +296,7 @@ Children:
         name: Input
         type: PIDSource
         validators: [ChildDropdownSelected]
-        value: Shooter encoder
+        value: Shooter Encoder
       F: !!robotbuilder.data.properties.DoubleProperty {default: 0, name: F, validators: null,
         value: 0.0}
       Tolerance: !!robotbuilder.data.properties.DoubleProperty {default: 0.2, name: Tolerance,
@@ -316,7 +316,7 @@ Children:
         name: Output
         type: PIDOutput
         validators: [ChildDropdownSelected]
-        value: Shooter controller
+        value: Shooter Controller
       Minimum Input: !!robotbuilder.data.properties.DoubleProperty {default: 0, name: Minimum Input,
         validators: null, value: 0.0}
       Minimum Output: !!robotbuilder.data.properties.DoubleProperty {default: -1,
@@ -330,7 +330,7 @@ Children:
   - Name: Feeder
     Base: Subsystem
     Children:
-    - Name: limSwitch
+    - Name: LimSwitch
       Base: Limit Switch
       Children: []
       Properties:
@@ -347,7 +347,7 @@ Children:
           name: Input Module (Digital)
           validators: [DigitalChannel]
           value: '1'
-    - Name: piston
+    - Name: Piston
       Base: Speed Controller
       Children: []
       Properties:
@@ -379,7 +379,7 @@ Children:
   - Name: Joystick 1
     Base: Joystick
     Children:
-    - Name: climbButton
+    - Name: ClimbButton
       Base: Joystick Button
       Children: []
       Properties:
@@ -404,7 +404,7 @@ Children:
           name: When to Run
           validators: null
           value: whenPressed
-    - Name: shootButton
+    - Name: ShootButton
       Base: Joystick Button
       Children: []
       Properties:
@@ -428,7 +428,7 @@ Children:
           name: When to Run
           validators: null
           value: whenPressed
-    - Name: stopButton
+    - Name: StopButton
       Base: Joystick Button
       Children: []
       Properties:
@@ -589,4 +589,4 @@ Properties:
     name: Export Commands, validators: null, value: true}
   Java Project Directory: !!robotbuilder.data.properties.FileProperty {default: 'C:\Users\Westmont
       Robotics\NetBeansProjects', extension: null, folder: true, name: Java Project Directory,
-    validators: null, value: 'C:\Users\Westmont Robotics\Desktop'}
+    validators: null, value: 'C:\Users\Westmont Robotics\Documents\GitHub'}
