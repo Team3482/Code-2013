@@ -11,7 +11,7 @@ package robot.core.commands;
 import edu.wpi.first.wpilibj.command.Command;
 import robot.core.Robot;
 /**
- *
+ * @author Westmont Robotics
  */
 public class  Drive extends Command {
     public Drive() {
@@ -27,6 +27,8 @@ public class  Drive extends Command {
     }
     // Called repeatedly when this Command is scheduled to run
     protected void execute() {
+        double k = Robot.oi.getJoystick1().getThrottle();
+        Robot.chassis.driveWithJoystick(Robot.oi.getJoystick1(), k);
     }
     // Make this return true when this Command no longer needs to run execute()
     protected boolean isFinished() {
@@ -38,5 +40,6 @@ public class  Drive extends Command {
     // Called when another command which requires one or more of the same
     // subsystems is scheduled to run
     protected void interrupted() {
+        end();
     }
 }
