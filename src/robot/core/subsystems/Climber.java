@@ -9,6 +9,7 @@
 // it from being updated in the future.
 package robot.core.subsystems;
 import robot.core.RobotMap;
+import edu.wpi.first.wpilibj.Timer;
 import robot.core.commands.*;
 import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.command.Subsystem;
@@ -33,31 +34,29 @@ public class Climber extends Subsystem {
         //setDefaultCommand(new MySpecialCommand());
     }
     
-    public void armDown() {
-        
+    public void armSet(double v) {
+        arm.set(v);
     }
     
-    public void armUp() {
-        
-    }
-    
-    public void winchUp() {
-        
-    }
-    
-    public void winchDown() {
-        
+    public void winchSet(double v) {
+        winch.set(v);
     }
     
     public void clamp() {
-        
+        // TODO: Experimental Values
+        clamp.set(0.75);
+        Timer.delay(2);
+        clamp.set(0);
     }
     
     public void unClamp() {
-        
+        // TODO: Experimental Values
+        clamp.set(-0.75);
+        Timer.delay(2);
+        clamp.set(0);
     }
     
     public void climb() {
-        
+        //lots-o code here
     }
 }
