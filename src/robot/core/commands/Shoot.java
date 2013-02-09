@@ -11,6 +11,7 @@
 
 package robot.core.commands;
 import edu.wpi.first.wpilibj.command.CommandGroup;
+import robot.core.Robot;
 
 /**
  *
@@ -34,5 +35,6 @@ public class Shoot extends CommandGroup {
         // e.g. if Command1 requires chassis, and Command2 requires arm,
         // a CommandGroup containing them would require both the chassis and the
         // arm.
+        requires(Robot.shooter);
     }
 }

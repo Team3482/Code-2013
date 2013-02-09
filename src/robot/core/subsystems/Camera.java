@@ -58,13 +58,20 @@ public class Camera extends Subsystem {
             bin = img.thresholdHSV(hueLow, hueHigh, saturationLow,
                     saturationHigh, valueLow, valueHigh).convexHull(connectivity8);
         } catch(Exception e) {
-            System.out.println("IMAGE NOT VALID. GIMME VALID IMAGES.");
             System.out.println(e.getMessage());
         }
    }
     // Methods for checking camera status
-    public static boolean hasFreshImage() {
-        return AxisCamera.getInstance().freshImage();
+    public static ColorImage getImage() {
+        try {
+            AxisCamera c = AxisCamera.getInstance();
+            if(c.freshImage()) {
+                return c.getImage();
+            }
+        } catch(Exception e) {
+            System.out.println(e.getMessage());
+        }
+        return null;
     }
     
     // Methods to configure camera settings

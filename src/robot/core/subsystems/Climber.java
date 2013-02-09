@@ -32,4 +32,32 @@ public class Climber extends Subsystem {
         // Set the default command for a subsystem here.
         //setDefaultCommand(new MySpecialCommand());
     }
+    
+    public void armDown() {
+        
+    }
+    
+    public void armUp() {
+        
+    }
+    
+    public void winchUp() {
+        
+    }
+    
+    public void winchDown() {
+        
+    }
+    
+    public void clamp() {
+        
+    }
+    
+    public void unClamp() {
+        
+    }
+    
+    public void climb() {
+        
+    }
 }
