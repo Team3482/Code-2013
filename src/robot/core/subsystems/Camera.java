@@ -9,31 +9,29 @@
 // it from being updated in th future.
 
 package robot.core.subsystems;
-
 import edu.wpi.first.wpilibj.camera.AxisCamera;
 import edu.wpi.first.wpilibj.camera.AxisCamera.*;
 import edu.wpi.first.wpilibj.camera.AxisCameraException;
-//import robot.core.commands.*;
+import robot.core.commands.*;
 import edu.wpi.first.wpilibj.image.*;
 import edu.wpi.first.wpilibj.command.Subsystem;
-
 /**
  * The Camera subsystem provides vision processing functionality
  * for the Axis Camera
  */
-
 public class Camera extends Subsystem {
     
     // Camera setting constants
-    static final int       BRIGHTNESS       = ;
-    static final int       COLOR_LEVEL      = ;
-    static final int       COMPRESSION      = 30;
-    static final ExposureT EXPOSURE_CONTROL = ExposureT.flickerfree60;
-    static final EXPOSURE_PRIORITY = ;
-    static final MAX_FPS = ;
-    static final RESOLUTION = ;
-    static final ROTATION = ;
-    static final WHITE_BALANCE = ;
+    static final int BRIGHTNESS  = 50;
+    static final int COLOR_LEVEL = 50;
+    static final int COMPRESSION = 30;
+    static final int MAX_FPS     = 24;
+    static final ExposureT         EXPOSURE_CONTROL  = ExposureT.flickerfree60;
+    static final ExposurePriorityT EXPOSURE_PRIORITY = ExposurePriorityT.none;
+    static final ResolutionT       RESOLUTION        = ResolutionT.k320x240;
+    static final RotationT         ROTATION          = RotationT.k0;
+    static final WhiteBalanceT     WHITE_BALANCE     = WhiteBalanceT.fixedIndoor;
+    static final String IPAdress = "10.34.82.11";
     
     // TODO: find constants for *our* ring light
     // Pixel filtering constants for the green ring light in the sample images(HSV)
@@ -46,14 +44,14 @@ public class Camera extends Subsystem {
     
     static CriteriaCollection cc = new CriteriaCollection();
     
-    // Aspect ratio ranges
-    static final float   ASPECT_RATIO_LOW  = 0;
-    static final float   ASPECT_RATIO_HIGH = 2;
-    static final boolean OUTSIDE_RANGE     = false;
+    // Area ranges
+    static final float   AREA_LOW      = 500;
+    static final float   AREA_HIGH     = 65535 ;
+    static final boolean OUTSIDE_RANGE = false;
     
     public class Scores {
         double rectangularity;
-        double aspectRatioInner;
+        double aspectRatioMiddle;
         double aspectRatioOuter;
         double xEdge;
         double yEdge;
@@ -64,31 +62,54 @@ public class Camera extends Subsystem {
         //setDefaultCommand(new MySpecialCommand());
     }
     
-    public static void calculate(ColorImage img) throws NIVisionException {
+    public double calculate(ColorImage img) throws NIVisionException {
         // TODO: Add waits before looping again (preferably until a new image is available)
-
         // Adds particle area to the CriteriaCollection object for calculating rectangularity score
-        cc.addCriteria(NIVision.MeasurementType.IMAQ_MT_AREA, aspectRatioHigh,
-                aspectRatioLow, outsideRange);
-        boolean connectivity8 = false;
+        cc.addCriteria(NIVision.MeasurementType.IMAQ_MT_AREA, AREA_LOW,
+                AREA_HIGH, OUTSIDE_RANGE);
         BinaryImage threshold, convexHull, filtered;
+        boolean connectivity8 = false;
         
-        threshold = img.thresholdHSV(hueLow, hueHigh, saturationLow,
-            saturationHigh, valueLow, valueHigh);
+        threshold = img.thresholdHSV(HUE_LOW, HUE_HIGH, SATURATION_LOW,
+            SATURATION_HIGH, VALUE_LOW, VALUE_HIGH);
         convexHull = threshold.convexHull(connectivity8);
+        filtered = convexHull.particleFilter(cc);
         
+        Scores[] scores = new Scores[filtered.getNumberParticles()];
+        for(int i = 0; i < scores.length; i++) {
+            ParticleAnalysisReport report = filtered.getParticleAnalysisReport(i);
+            scores[i].rectangularity    = scoreRectangularity(report);
+            scores[i].aspectRatioMiddle = scoreAspectRatio(report, true); 
+            scores[i].aspectRatioOuter  = scoreAspectRatio(report, false);
+        }
+        return 0.0;
         //ParticleAnalysisReport[] reports = bin.getOrderedParticleAnalysisReports();
-   }
-
-    public static boolean freshImage() {
-        return AxisCamera.getInstance().freshImage();
     }
-    public static ColorImage getImage() throws AxisCameraException, NIVisionException {
-        return AxisCamera.getInstance().getImage();
+    
+    // Scoring different aspects of particles
+    public double scoreRectangularity(ParticleAnalysisReport report) {
+        double boundingRectArea;
+        if((boundingRectArea = report.boundingRectHeight*report.boundingRectWidth) != 0) {
+            return 100*report.particleArea/boundingRectArea;
+        } else {
+            return 0;
+        }
+    }
+    public double scoreAspectRatio(ParticleAnalysisReport report, boolean middle) {
+        double aspectRatio = report.boundingRectWidth/report.boundingRectHeight;
+        double idealAspectRatio = middle ? (62/29) : (62/20);
+        return 100 * (1 - Math.abs(aspectRatio - idealAspectRatio)/idealAspectRatio);
+    }
+    // Retrieving images from the camera
+    public boolean freshImage() {
+        return AxisCamera.getInstance(IPAdress).freshImage();
+    }
+    public ColorImage getImage() throws AxisCameraException, NIVisionException {
+        return AxisCamera.getInstance(IPAdress).getImage();
     }
     
     // Method to configure camera settings
-    public static void configureCamera() {
+    public void configureCamera() {
         AxisCamera c = AxisCamera.getInstance();
         c.writeBrightness(BRIGHTNESS);
         c.writeColorLevel(COLOR_LEVEL);
