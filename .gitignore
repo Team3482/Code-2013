@@ -74,6 +74,7 @@ dist/
 nbdist/
 nbactions.xml
 nb-configuration.xml
+*.bak.xml
 
 # Eclipse #
 ###########
