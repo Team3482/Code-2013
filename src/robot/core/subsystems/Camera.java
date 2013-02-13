@@ -27,6 +27,7 @@ public class Camera extends Subsystem {
     static final int COLOR_LEVEL = 50;
     static final int COMPRESSION = 30;
     static final int MAX_FPS     = 24;
+
     static final ExposurePriorityT EXPOSURE_PRIORITY = ExposurePriorityT.none;
     static final ResolutionT       RESOLUTION        = ResolutionT.k320x240;
     static final RotationT         ROTATION          = RotationT.k0;
@@ -125,12 +126,13 @@ public class Camera extends Subsystem {
         c.writeBrightness(BRIGHTNESS);
         c.writeColorLevel(COLOR_LEVEL);
         c.writeCompression(COMPRESSION);
+
         c.writeExposurePriority(EXPOSURE_PRIORITY);
         c.writeMaxFPS(MAX_FPS);
         c.writeResolution(RESOLUTION);
         c.writeRotation(ROTATION);
         c.writeWhiteBalance(WHITE_BALANCE);
-        
+
         c.writeExposureControl(ExposureT.automatic);
         Timer.delay(5);
         c.writeExposureControl(ExposureT.hold);
