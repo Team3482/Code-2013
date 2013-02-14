@@ -31,7 +31,10 @@ public class Feeder extends Subsystem {
         //setDefaultCommand(new MySpecialCommand());
     }
     
+    public boolean isFrisbee() {
+        return limSwitch.get();
+    }
     public void load() {
-        
+        // TODO: Need encoder here.
     }
 }
