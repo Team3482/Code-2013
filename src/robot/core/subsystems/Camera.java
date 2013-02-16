@@ -8,6 +8,7 @@
 // update. Deleting the comments indicating the section will prevent
 // it from being updated in th future.
 package robot.core.subsystems;
+import com.sun.squawk.util.Arrays;
 import edu.wpi.first.wpilibj.camera.AxisCamera;
 import edu.wpi.first.wpilibj.camera.AxisCamera.*;
 import edu.wpi.first.wpilibj.camera.AxisCameraException;
@@ -15,6 +16,8 @@ import edu.wpi.first.wpilibj.Timer;
 import robot.core.commands.*;
 import edu.wpi.first.wpilibj.image.*;
 import edu.wpi.first.wpilibj.command.Subsystem;
+
+import java.util.*;
 /**
  * The Camera subsystem provides vision processing functionality
  * for the Axis Camera
@@ -48,12 +51,27 @@ public class Camera extends Subsystem {
     static final float   AREA_HIGH     = 65535 ;
     static final boolean OUTSIDE_RANGE = false;
     
+    // Max/Min edge scores
+    final int XMAXSIZE = 24;
+    final int XMINSIZE = 24;
+    final int YMAXSIZE = 24;
+    final int YMINSIZE = 48;
+    static final double xMax[] = { 1,  1,   1,   1,  .5,  .5,  .5,  .5,  .5,  .5,  .5,  .5,  .5,  .5,  .5,  .5,  .5,  .5,  .5,  .5,   1,   1,   1,   1};
+    static final double xMin[] = {.4, .6,  .1,  .1,  .1,  .1,  .1,  .1,  .1,  .1,  .1,  .1,  .1,  .1,  .1,  .1,  .1,  .1,  .1,  .1,  .1,  .1, 0.6,   0};
+    static final double yMax[] = { 1,  1,   1,   1,  .5,  .5,  .5,  .5,  .5,  .5,  .5,  .5,  .5,  .5,  .5,  .5,  .5,  .5,  .5,  .5,   1,   1,   1,   1};
+    static final double yMin[] = {.4, .6, .05, .05, .05, .05, .05, .05, .05, .05, .05, .05, .05, .05, .05, .05, .05, .05, .05, .05, .05, .05, .05, .05, .05, .05, .05, .05, .05, .05, .05, .05, .05, .05, .05, .05, .05, .05, .05, .05, .05, .05, .05, .05, .05, .05, .6, 0};
+    
     public class Scores {
         double rectangularity;
         double aspectRatioMiddle;
         double aspectRatioOuter;
         double xEdge;
         double yEdge;
+        
+        public double getCompositeScore() {
+            double aspectRatio = aspectRatioMiddle > aspectRatioOuter ? aspectRatioMiddle : aspectRatioOuter;
+            return (rectangularity + aspectRatio + xEdge + yEdge) / 400;
+        }
     }
     
     public void initDefaultCommand() {
@@ -105,26 +123,54 @@ public class Camera extends Subsystem {
         return Math.max(0, 100 * (1 - Math.abs(1 - aspectRatio/idealAspectRatio)));
     }
     private double scoreXEdge(BinaryImage img, ParticleAnalysisReport report) throws NIVisionException {
-        LinearAverages colAvgs;
+        LinearAverages avgs;
+        float[] colAvgs;
+        int c = 0;
         
         NIVision.Rect rect = new NIVision.Rect(report.boundingRectTop, report.boundingRectLeft,
                 report.boundingRectHeight, report.boundingRectWidth);
-        colAvgs = NIVision.getLinearAverages(img.image,
+        avgs = NIVision.getLinearAverages(img.image,
                 LinearAverages.LinearAveragesMode.IMAQ_COLUMN_AVERAGES, rect);
+        colAvgs = avgs.getColumnAverages();
         
-        return 0.0;
+        for(int i = 0; i < colAvgs.length; i ++) {
+            if(xMin[(i*(XMAXSIZE-1)/colAvgs.length)] <= colAvgs[i] &&
+                    xMax[(i*(XMAXSIZE-1)/colAvgs.length)] >= colAvgs[i]) {
+                c++;
+            }
+        }
+        
+        return 100 * c/(colAvgs.length);
     }
     private double scoreYEdge(BinaryImage img, ParticleAnalysisReport report) throws NIVisionException {
-        LinearAverages rowAvgs;
+        LinearAverages avgs;
+        float[] rowAvgs;
+        int c = 0;
         
         NIVision.Rect rect = new NIVision.Rect(report.boundingRectTop, report.boundingRectLeft,
                 report.boundingRectHeight, report.boundingRectWidth);
-        rowAvgs = NIVision.getLinearAverages(img.image,
+        avgs = NIVision.getLinearAverages(img.image,
                 LinearAverages.LinearAveragesMode.IMAQ_ROW_AVERAGES, rect);
+        rowAvgs = avgs.getRowAverages();
         
-        return 0.0;
+        for(int i = 0; i < rowAvgs.length; i++) {
+            if(yMin[(i*(YMINSIZE-1)/rowAvgs.length)] <= rowAvgs[i] &&
+                    yMax[(i*(YMAXSIZE-1)/rowAvgs.length)] >= rowAvgs[i]) {
+                c++;
+            }
+        }
+        
+        return 100 * c/(rowAvgs.length);
     }
 
+    public int[] getTargets(Scores[] scores) {
+        double[] compositeScores = new double[scores.length];
+        for(int i = 0; i < scores.length; i++) {
+            compositeScores[i] = scores[i].getCompositeScore();
+        }
+        return new int[20];
+    }
+    
     // Retrieving images from the camera
     public boolean freshImage() {
         return AxisCamera.getInstance(IPAdress).freshImage();

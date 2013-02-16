@@ -34,10 +34,10 @@ public class Chassis extends Subsystem {
         // Set the default command for a subsystem here.
         //setDefaultCommand(new MySpecialCommand());
     }
-    public void driveWithJoystick(Joystick s){
+    public void driveWithJoystick(Joystick s) {
         robotDrive.arcadeDrive(s);
     }
-    public void stop(){
+    public void stop() {
         robotDrive.stopMotor();
     }
     public void aim() {
