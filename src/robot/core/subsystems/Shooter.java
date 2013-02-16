@@ -25,7 +25,7 @@ public class Shooter extends PIDSubsystem {
     final static int KP = 1000;
     final static int KI = 100;
     final static int KD = 10000;
-    double tp = 1.0;
+    double tp = .75;
     int integral = 0;
     int lastError = 0;
     int derivative = 0;
@@ -101,10 +101,13 @@ public class Shooter extends PIDSubsystem {
     
     //method 2
     public void spinUp() {
-        
+        encoder.start();
+        getPIDController().setSetpoint(tp);
+        //controller.set();
     }
     
     public void spinDown() {
-        
+        encoder.stop();
+        // TODO: free encoder
     }
 }
