@@ -36,7 +36,7 @@ public class Camera extends Subsystem {
     static final String IPAdress = "10.34.82.11";
     
     // TODO: find constants for *our* ring light
-    // Pixel filtering constants for the green ring light in the sample images(HSV)
+    // Pixel filtering constants for the green ring light in the sample images (HSV)
     static final int HUE_LOW         = 96;
     static final int HUE_HIGH        = 114;
     static final int SATURATION_LOW  = 148;
@@ -48,7 +48,7 @@ public class Camera extends Subsystem {
     
     // Area ranges
     static final float   AREA_LOW      = 500;
-    static final float   AREA_HIGH     = 65535 ;
+    static final float   AREA_HIGH     = 65535;  // TODO: Is this the right max area?
     static final boolean OUTSIDE_RANGE = false;
     
     // Max/Min edge scores
@@ -70,7 +70,7 @@ public class Camera extends Subsystem {
         
         public double getCompositeScore() {
             double aspectRatio = aspectRatioMiddle > aspectRatioOuter ? aspectRatioMiddle : aspectRatioOuter;
-            return (rectangularity + aspectRatio + xEdge + yEdge) / 400;
+            return (rectangularity + aspectRatio + xEdge + yEdge) / 4.0;
         }
     }
     
@@ -98,9 +98,11 @@ public class Camera extends Subsystem {
             scores[i].rectangularity    = scoreRectangularity(report);
             scores[i].aspectRatioMiddle = scoreAspectRatio(report, true); 
             scores[i].aspectRatioOuter  = scoreAspectRatio(report, false);
-            scores[i].xEdge             = scoreXEdge(filtered, report);
-            scores[i].yEdge             = scoreYEdge(filtered, report);
+            scores[i].xEdge             = scoreXEdge(threshold, report);
+            scores[i].yEdge             = scoreYEdge(threshold, report);    // Changed "filtered" to "threshold"
+                                                                            // Does the particle report match the "threshold" image?
         }
+        // TODO: Are the free() function calls necessary (yet)?
         threshold.free();
         convexHull.free();
         filtered.free();
@@ -118,6 +120,7 @@ public class Camera extends Subsystem {
         }
     }
     private double scoreAspectRatio(ParticleAnalysisReport report, boolean middle) {
+        // TODO: Does this method work as it should?
         double aspectRatio = report.boundingRectWidth/report.boundingRectHeight;
         double idealAspectRatio = middle ? (62/29) : (62/20);
         return Math.max(0, 100 * (1 - Math.abs(1 - aspectRatio/idealAspectRatio)));
@@ -163,11 +166,23 @@ public class Camera extends Subsystem {
         return 100 * c/(rowAvgs.length);
     }
 
+    /**
+     * Finds the highest scoring particles.
+     * Uses the getCompositeScore() method of the Scores class to find the three
+     * highest composite particle scores, and returns their indices. Returns the
+     * indices because the MeasureParticle() method requires the index of the
+     * particle.
+     * @author: Rodrigo Valle
+     * @param: Array of Scores objects
+     * @return: Integer array of the indices of the three highest scoring particles
+     */
     public int[] getTargets(Scores[] scores) {
+        // TODO: finish up the getTargets() method
         double[] compositeScores = new double[scores.length];
         for(int i = 0; i < scores.length; i++) {
             compositeScores[i] = scores[i].getCompositeScore();
         }
+        Arrays.sort(compositeScores);
         return new int[20];
     }
     
