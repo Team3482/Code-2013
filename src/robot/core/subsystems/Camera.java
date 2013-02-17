@@ -17,13 +17,13 @@ import robot.core.commands.*;
 import edu.wpi.first.wpilibj.image.*;
 import edu.wpi.first.wpilibj.command.Subsystem;
 
-import java.util.*;
+import com.sun.squawk.util.*;
 /**
  * The Camera subsystem provides vision processing functionality
  * for the Axis Camera
  */
+// TODO: free images
 public class Camera extends Subsystem {
-    
     // Camera setting constants
     static final int BRIGHTNESS  = 50;
     static final int COLOR_LEVEL = 50;
@@ -48,7 +48,7 @@ public class Camera extends Subsystem {
     
     // Area ranges
     static final float   AREA_LOW      = 500;
-    static final float   AREA_HIGH     = 65535;  // TODO: Is this the right max area?
+    static final float   AREA_HIGH     = 65535;
     static final boolean OUTSIDE_RANGE = false;
     
     // Max/Min edge scores
@@ -60,17 +60,29 @@ public class Camera extends Subsystem {
     static final double xMin[] = {.4, .6,  .1,  .1,  .1,  .1,  .1,  .1,  .1,  .1,  .1,  .1,  .1,  .1,  .1,  .1,  .1,  .1,  .1,  .1,  .1,  .1, 0.6,   0};
     static final double yMax[] = { 1,  1,   1,   1,  .5,  .5,  .5,  .5,  .5,  .5,  .5,  .5,  .5,  .5,  .5,  .5,  .5,  .5,  .5,  .5,   1,   1,   1,   1};
     static final double yMin[] = {.4, .6, .05, .05, .05, .05, .05, .05, .05, .05, .05, .05, .05, .05, .05, .05, .05, .05, .05, .05, .05, .05, .05, .05, .05, .05, .05, .05, .05, .05, .05, .05, .05, .05, .05, .05, .05, .05, .05, .05, .05, .05, .05, .05, .05, .05, .6, 0};
-    
+
+    static final double COMPOSITE_MIN = 75;
+
     public class Scores {
         double rectangularity;
         double aspectRatioMiddle;
         double aspectRatioOuter;
         double xEdge;
         double yEdge;
-        
-        public double getCompositeScore() {
-            double aspectRatio = aspectRatioMiddle > aspectRatioOuter ? aspectRatioMiddle : aspectRatioOuter;
-            return (rectangularity + aspectRatio + xEdge + yEdge) / 4.0;
+        double compositeScore;
+        int particleNumber;
+    }
+    public class CompareScores implements Comparer {
+        public int compare(Object o1, Object o2) {
+            Scores s1 = (Scores)o1;
+            Scores s2 = (Scores)o2;
+            if(s1.compositeScore > s2.compositeScore) {
+                return 1;
+            } else if(s1.compositeScore < s2.compositeScore) {
+                return -1;
+            } else {
+                return 0;
+            }
         }
     }
     
@@ -79,6 +91,10 @@ public class Camera extends Subsystem {
         //setDefaultCommand(new MySpecialCommand());
     }
     
+    /* ========================================================
+     * |  SCORING
+     * ======================================================== 
+     */
     public Scores[] score(ColorImage img) throws NIVisionException {
         // TODO: Add waits before looping again (preferably until a new image is available)
         // Adds particle area to the CriteriaCollection object for calculating rectangularity score
@@ -99,17 +115,13 @@ public class Camera extends Subsystem {
             scores[i].aspectRatioMiddle = scoreAspectRatio(report, true); 
             scores[i].aspectRatioOuter  = scoreAspectRatio(report, false);
             scores[i].xEdge             = scoreXEdge(threshold, report);
-            scores[i].yEdge             = scoreYEdge(threshold, report);    // Changed "filtered" to "threshold"
-                                                                            // Does the particle report match the "threshold" image?
+            scores[i].yEdge             = scoreYEdge(threshold, report);
+            scores[i].compositeScore    = compositeScore(scores[i]);
+            scores[i].particleNumber    = i;
         }
-        // TODO: Are the free() function calls necessary (yet)?
-        threshold.free();
-        convexHull.free();
-        filtered.free();
         return scores;
     }
     
-    // Scoring different aspects of particles
     private double scoreRectangularity(ParticleAnalysisReport report) {
         double boundingRectArea;
         
@@ -165,25 +177,84 @@ public class Camera extends Subsystem {
         
         return 100 * c/(rowAvgs.length);
     }
-
+    private double compositeScore(Scores score) {
+        double aspectRatio = score.aspectRatioMiddle > score.aspectRatioOuter ? score.aspectRatioMiddle : score.aspectRatioOuter;
+        double compositeScore = (score.rectangularity + aspectRatio + score.xEdge + score.yEdge) / 4.0;
+        return compositeScore;
+    }
+    
+    /* ========================================================
+     * |  TARGETING
+     * ======================================================== 
+     */
     /**
-     * Finds the highest scoring particles.
+     * Finds the three (or less) highest scoring particles.
      * Uses the getCompositeScore() method of the Scores class to find the three
      * highest composite particle scores, and returns their indices. Returns the
      * indices because the MeasureParticle() method requires the index of the
      * particle.
-     * @author: Rodrigo Valle
-     * @param: Array of Scores objects
-     * @return: Integer array of the indices of the three highest scoring particles
+     * @author Rodrigo Valle
+     * @param score
+     * @return Integer array of the indices of the three highest scoring particles
      */
-    public int[] getTargets(Scores[] scores) {
-        // TODO: finish up the getTargets() method
-        double[] compositeScores = new double[scores.length];
-        for(int i = 0; i < scores.length; i++) {
-            compositeScores[i] = scores[i].getCompositeScore();
+    public int[] getTargets(Scores[] score) {
+        // TODO: copy the score array? Currently sorts the score array passed to it.
+        Arrays.sort(score, new CompareScores());
+        int c = 0;
+        for(int i = 0; i < 3; i++) {
+            if(score[i].compositeScore >= COMPOSITE_MIN) {
+                c++;
+            } else {
+                break;
+            }
         }
-        Arrays.sort(compositeScores);
-        return new int[20];
+        int[] topScores = new int[c];
+        for(int i = 0; i < topScores.length; i++) {
+            topScores[i] = score[i].particleNumber;
+        }
+        
+        return topScores;
+    }
+    
+    /**
+     * Finds offset of the selected target from the center of the image.
+     * Takes the filtered convex hull image.
+     * @param img
+     * @param topScores
+     * @param target 0 => left target, 1 => middle target, 2 => right target
+     * @return
+     * 
+     */
+    public double calculateOffset(BinaryImage filtered, int[] topScores, int target) throws NIVisionException {
+        // Check to make sure selected target is valid
+        if(target < 0 || target >= topScores.length) {
+            return -1000.0;  // invalid target
+            // TODO: Perhaps print an error to the DriverStationLCD.
+        }
+        double[] positionsXCenter = new double[topScores.length];
+        for(int i = 0; i < positionsXCenter.length; i++) {
+            double firstPixelX   = NIVision.MeasureParticle(filtered.image, topScores[i], false, NIVision.MeasurementType.IMAQ_MT_FIRST_PIXEL_X);
+            double particleWidth = NIVision.MeasureParticle(filtered.image, topScores[i], false, NIVision.MeasurementType.IMAQ_MT_BOUNDING_RECT_WIDTH);
+            positionsXCenter[i]  = firstPixelX + particleWidth/2.0;
+        }
+        // Sorts from least to greatest.
+        Arrays.sort(positionsXCenter);
+        // if left target is selected
+        double imageCenter = positionsXCenter[0] - filtered.getWidth()/2.0;
+        if(target == 0) {
+            // positions to the right of the center are positive
+            // positions to the left of the center are negative
+            return positionsXCenter[0] - imageCenter;
+        } else if(target == 1) {
+            return positionsXCenter[1] - imageCenter;
+        } else /*if(target == 2)*/ {
+            return positionsXCenter[2] - imageCenter;
+        }
+    }
+    
+    public double calculateDistance() {
+        // TODO: Implement calculateDistance() method.
+        return 0.0;
     }
     
     // Retrieving images from the camera
@@ -192,6 +263,9 @@ public class Camera extends Subsystem {
     }
     public ColorImage getImage() throws AxisCameraException, NIVisionException {
         return AxisCamera.getInstance(IPAdress).getImage();
+    }
+    public void freeImages() {
+        
     }
 
     // Method to configure camera settings
