@@ -25,11 +25,15 @@ public class  Drive extends Command {
     }
     // Called just before this Command runs the first time
     protected void initialize() {
+        Robot.chassis.invertMotors();
     }
     // Called repeatedly when this Command is scheduled to run
     protected void execute() {
-        Robot.chassis.driveWithJoystick(Robot.oi.getJoystick1());
-        //Robot.chassis.driveWithJoystick(Robot.oi.getJoystick1());
+        if(Robot.oi.stopButton.get()) {
+            Robot.chassis.stop();
+        } else {
+            Robot.chassis.driveWithJoystick(Robot.oi.getJoystick1());
+        }
     }
     // Make this return true when this Command no longer needs to run execute()
     protected boolean isFinished() {

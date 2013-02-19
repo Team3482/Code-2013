@@ -12,6 +12,7 @@ import robot.core.RobotMap;
 import robot.core.commands.*;
 import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.command.Subsystem;
+import edu.wpi.first.wpilibj.smartdashboard.*;
 /**
  * @author Westmont Robotics
  */
@@ -34,8 +35,33 @@ public class Chassis extends Subsystem {
         // Set the default command for a subsystem here.
         //setDefaultCommand(new MySpecialCommand());
     }
+    public void invertMotors() {
+        robotDrive.setInvertedMotor(RobotDrive.MotorType.kFrontLeft, true);
+        robotDrive.setInvertedMotor(RobotDrive.MotorType.kFrontRight, true);
+        robotDrive.setInvertedMotor(RobotDrive.MotorType.kRearLeft, true);
+        robotDrive.setInvertedMotor(RobotDrive.MotorType.kRearRight, true);
+    }
     public void driveWithJoystick(Joystick s) {
-        robotDrive.arcadeDrive(s);
+        double deadZone = .05;
+        double xAxis = s.getAxis(Joystick.AxisType.kX);
+        double yAxis = s.getAxis(Joystick.AxisType.kY);
+        
+        // X sensitivity set by slider, Y sensitivity set by knob
+        double slider = SmartDashboard.getNumber("Slider 1");
+        xAxis *= (slider/100);
+        double knob = s.getAxis(Joystick.AxisType.kZ);
+        knob = 1 - (knob/2);    // Format input from Z Axis
+        yAxis *= knob;
+
+        // If the X or Y axes are in the deadzone, flip them to zero.
+        if (xAxis < deadZone && xAxis > -deadZone) {
+            xAxis = 0;
+        }
+        if (yAxis < deadZone && yAxis > -deadZone) {
+            yAxis = 0;
+        }
+        
+        robotDrive.arcadeDrive(yAxis, xAxis);
     }
     public void stop() {
         robotDrive.stopMotor();
