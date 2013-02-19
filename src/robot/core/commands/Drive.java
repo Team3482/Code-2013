@@ -11,6 +11,7 @@ package robot.core.commands;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.command.Command;
 import robot.core.Robot;
+import robot.core.RobotMap;
 /**
  * @author Westmont Robotics
  */
@@ -33,6 +34,11 @@ public class  Drive extends Command {
             Robot.chassis.stop();
         } else {
             Robot.chassis.driveWithJoystick(Robot.oi.getJoystick1());
+        }
+        if(Robot.oi.shootButton.get()) {
+            RobotMap.shooterController.set(1.0);
+        } else {
+            RobotMap.shooterController.set(0.0);
         }
     }
     // Make this return true when this Command no longer needs to run execute()
