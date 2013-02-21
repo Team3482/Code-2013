@@ -44,6 +44,7 @@ public class Camera extends Subsystem {
     static final int VALUE_LOW       = 84;
     static final int VALUE_HIGH      = 162;
     
+    BinaryImage threshold, convexHull, filtered;
     static CriteriaCollection cc = new CriteriaCollection();
     
     // Area ranges
@@ -99,7 +100,6 @@ public class Camera extends Subsystem {
         // TODO: Add waits before looping again (preferably until a new image is available)
         // Adds particle area to the CriteriaCollection object for calculating rectangularity score
         cc.addCriteria(NIVision.MeasurementType.IMAQ_MT_AREA, AREA_LOW, AREA_HIGH, OUTSIDE_RANGE);
-        BinaryImage threshold, convexHull, filtered;
         boolean connectivity8 = false;
         
         threshold = img.thresholdHSV(HUE_LOW, HUE_HIGH, SATURATION_LOW,
@@ -225,7 +225,7 @@ public class Camera extends Subsystem {
      * @return
      * 
      */
-    public double calculateOffset(BinaryImage filtered, int[] topScores, int target) throws NIVisionException {
+    public double calculateOffset(int[] topScores, int target) throws NIVisionException {
         // Check to make sure selected target is valid
         if(target < 0 || target >= topScores.length) {
             return -1000.0;  // invalid target
@@ -264,8 +264,10 @@ public class Camera extends Subsystem {
     public ColorImage getImage() throws AxisCameraException, NIVisionException {
         return AxisCamera.getInstance(IPAdress).getImage();
     }
-    public void freeImages() {
-        
+    public void freeImages() throws NIVisionException {
+        threshold.free();
+        convexHull.free();
+        filtered.free();
     }
 
     // Method to configure camera settings
