@@ -16,7 +16,6 @@ import edu.wpi.first.wpilibj.Timer;
 import robot.core.commands.*;
 import edu.wpi.first.wpilibj.image.*;
 import edu.wpi.first.wpilibj.command.Subsystem;
-
 import com.sun.squawk.util.*;
 /**
  * The Camera subsystem provides vision processing functionality
@@ -28,7 +27,7 @@ public class Camera extends Subsystem {
     static final int BRIGHTNESS  = 50;
     static final int COLOR_LEVEL = 50;
     static final int COMPRESSION = 30;
-    static final int MAX_FPS     = 24;
+    static final int MAX_FPS     = 2;
     static final ExposurePriorityT EXPOSURE_PRIORITY = ExposurePriorityT.none;
     static final ResolutionT       RESOLUTION        = ResolutionT.k320x240;
     static final RotationT         ROTATION          = RotationT.k0;
@@ -37,12 +36,12 @@ public class Camera extends Subsystem {
     
     // TODO: find constants for *our* ring light
     // Pixel filtering constants for the green ring light in the sample images (HSV)
-    static final int HUE_LOW         = 96;
-    static final int HUE_HIGH        = 114;
-    static final int SATURATION_LOW  = 148;
+    static final int HUE_LOW         = 23;
+    static final int HUE_HIGH        = 135;
+    static final int SATURATION_LOW  = 203;
     static final int SATURATION_HIGH = 255;
-    static final int VALUE_LOW       = 84;
-    static final int VALUE_HIGH      = 162;
+    static final int VALUE_LOW       = 232;
+    static final int VALUE_HIGH      = 255;
     
     BinaryImage threshold, convexHull, filtered;
     static CriteriaCollection cc = new CriteriaCollection();
@@ -61,9 +60,7 @@ public class Camera extends Subsystem {
     static final double xMin[] = {.4, .6,  .1,  .1,  .1,  .1,  .1,  .1,  .1,  .1,  .1,  .1,  .1,  .1,  .1,  .1,  .1,  .1,  .1,  .1,  .1,  .1, 0.6,   0};
     static final double yMax[] = { 1,  1,   1,   1,  .5,  .5,  .5,  .5,  .5,  .5,  .5,  .5,  .5,  .5,  .5,  .5,  .5,  .5,  .5,  .5,   1,   1,   1,   1};
     static final double yMin[] = {.4, .6, .05, .05, .05, .05, .05, .05, .05, .05, .05, .05, .05, .05, .05, .05, .05, .05, .05, .05, .05, .05, .05, .05, .05, .05, .05, .05, .05, .05, .05, .05, .05, .05, .05, .05, .05, .05, .05, .05, .05, .05, .05, .05, .05, .05, .6, 0};
-
     static final double COMPOSITE_MIN = 75;
-
     public class Scores {
         double rectangularity;
         double aspectRatioMiddle;
@@ -107,19 +104,23 @@ public class Camera extends Subsystem {
         convexHull = threshold.convexHull(connectivity8);
         filtered = convexHull.particleFilter(cc);
         
-        Scores[] scores = new Scores[filtered.getNumberParticles()];
-        for(int i = 0; i < scores.length; i++) {
+        Scores[] s = new Scores[filtered.getNumberParticles()];
+        int loopSize = s.length;
+        for(int i = 0; i < loopSize; i++) {
             ParticleAnalysisReport report = filtered.getParticleAnalysisReport(i);
             
-            scores[i].rectangularity    = scoreRectangularity(report);
-            scores[i].aspectRatioMiddle = scoreAspectRatio(report, true); 
-            scores[i].aspectRatioOuter  = scoreAspectRatio(report, false);
-            scores[i].xEdge             = scoreXEdge(threshold, report);
-            scores[i].yEdge             = scoreYEdge(threshold, report);
-            scores[i].compositeScore    = compositeScore(scores[i]);
-            scores[i].particleNumber    = i;
+            s[i].rectangularity    = scoreRectangularity(report);
+            s[i].aspectRatioMiddle = scoreAspectRatio(report, true); 
+            s[i].aspectRatioOuter  = scoreAspectRatio(report, false);
+            s[i].xEdge             = scoreXEdge(threshold, report);
+            s[i].yEdge             = scoreYEdge(threshold, report);
+            s[i].compositeScore    = compositeScore(s[i]);
+            if(s[i].compositeScore < COMPOSITE_MIN) {
+                loopSize--;
+            }
+            s[i].particleNumber    = i;
         }
-        return scores;
+        return s;
     }
     
     private double scoreRectangularity(ParticleAnalysisReport report) {
@@ -201,13 +202,7 @@ public class Camera extends Subsystem {
         // TODO: copy the score array? Currently sorts the score array passed to it.
         Arrays.sort(score, new CompareScores());
         int c = 0;
-        for(int i = 0; i < 3; i++) {
-            if(score[i].compositeScore >= COMPOSITE_MIN) {
-                c++;
-            } else {
-                break;
-            }
-        }
+        int alex = score.length > 3 ? 3 : score.length;
         int[] topScores = new int[c];
         for(int i = 0; i < topScores.length; i++) {
             topScores[i] = score[i].particleNumber;
@@ -258,7 +253,7 @@ public class Camera extends Subsystem {
     }
     
     // Retrieving images from the camera
-    public boolean freshImage() {
+    public boolean isFreshImage() {
         return AxisCamera.getInstance(IPAdress).freshImage();
     }
     public ColorImage getImage() throws AxisCameraException, NIVisionException {
@@ -269,7 +264,6 @@ public class Camera extends Subsystem {
         convexHull.free();
         filtered.free();
     }
-
     // Method to configure camera settings
     public void configureCamera() {
         AxisCamera c = AxisCamera.getInstance();
@@ -281,7 +275,6 @@ public class Camera extends Subsystem {
         c.writeResolution(RESOLUTION);
         c.writeRotation(ROTATION);
         c.writeWhiteBalance(WHITE_BALANCE);
-
         c.writeExposureControl(ExposureT.automatic);
         Timer.delay(5);
         c.writeExposureControl(ExposureT.hold);

@@ -52,7 +52,6 @@ public class Chassis extends Subsystem {
         double knob = s.getAxis(Joystick.AxisType.kZ);
         knob = 1 - (knob/2);    // Format input from Z Axis
         yAxis *= knob;
-
         // If the X or Y axes are in the deadzone, flip them to zero.
         if (xAxis < deadZone && xAxis > -deadZone) {
             xAxis = 0;
