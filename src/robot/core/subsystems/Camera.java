@@ -27,7 +27,7 @@ public class Camera extends Subsystem {
     static final int BRIGHTNESS  = 50;
     static final int COLOR_LEVEL = 50;
     static final int COMPRESSION = 30;
-    static final int MAX_FPS     = 2;
+    static final int MAX_FPS     = 5;
     static final ExposurePriorityT EXPOSURE_PRIORITY = ExposurePriorityT.none;
     static final ResolutionT       RESOLUTION        = ResolutionT.k320x240;
     static final RotationT         ROTATION          = RotationT.k0;
@@ -117,8 +117,10 @@ public class Camera extends Subsystem {
             s[i].compositeScore    = compositeScore(s[i]);
             if(s[i].compositeScore < COMPOSITE_MIN) {
                 loopSize--;
+                i--;
+                continue;
             }
-            s[i].particleNumber    = i;
+            s[i].particleNumber = i;
         }
         return s;
     }
@@ -201,9 +203,8 @@ public class Camera extends Subsystem {
     public int[] getTargets(Scores[] score) {
         // TODO: copy the score array? Currently sorts the score array passed to it.
         Arrays.sort(score, new CompareScores());
-        int c = 0;
-        int alex = score.length > 3 ? 3 : score.length;
-        int[] topScores = new int[c];
+        int alex = score.length >= 3 ? 3 : score.length;
+        int[] topScores = new int[alex];
         for(int i = 0; i < topScores.length; i++) {
             topScores[i] = score[i].particleNumber;
         }
@@ -242,8 +243,10 @@ public class Camera extends Subsystem {
             return positionsXCenter[0] - imageCenter;
         } else if(target == 1) {
             return positionsXCenter[1] - imageCenter;
-        } else /*if(target == 2)*/ {
+        } else if(target == 2) {
             return positionsXCenter[2] - imageCenter;
+        } else {
+            return -1000.0;
         }
     }
     

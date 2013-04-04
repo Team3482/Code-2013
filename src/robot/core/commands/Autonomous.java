@@ -35,7 +35,10 @@ public class Autonomous extends CommandGroup {
         // e.g. if Command1 requires chassis, and Command2 requires arm,
         // a CommandGroup containing them would require both the chassis and the
         // arm.
-        requires(Robot.shooter);
-        addSequential(new Shoot());
+        
+        // Turn off motor safety to avoid those annoying error messages
+        Robot.chassis.setSafety(false);
+        // Add a new shoot command
+        addSequential(new Shoot(3));
     }
 }

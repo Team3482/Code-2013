@@ -62,10 +62,10 @@ public class Chassis extends Subsystem {
         
         robotDrive.arcadeDrive(yAxis, xAxis);
     }
+    public void setSafety(boolean s) {
+        robotDrive.setSafetyEnabled(s);
+    }
     public void stop() {
         robotDrive.stopMotor();
-    }
-    public void aim() {
-        // TODO: aiming
     }
 }
