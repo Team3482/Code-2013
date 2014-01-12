@@ -47,11 +47,11 @@ public class Chassis extends Subsystem {
         double yAxis = s.getAxis(Joystick.AxisType.kY);
         
         // X sensitivity set by slider, Y sensitivity set by knob
-        double slider = SmartDashboard.getNumber("Slider 1");
-        xAxis *= (slider/100);
+        //double slider = SmartDashboard.getNumber("Slider 1");
+        //xAxis *= (slider/100);
         double knob = s.getAxis(Joystick.AxisType.kZ);
-        knob = 1 - (knob/2);    // Format input from Z Axis
-        yAxis *= knob;
+        //knob = 1 - (knob/2);    // Format input from Z Axis
+        //yAxis *= knob;
         // If the X or Y axes are in the deadzone, flip them to zero.
         if (xAxis < deadZone && xAxis > -deadZone) {
             xAxis = 0;
@@ -59,12 +59,18 @@ public class Chassis extends Subsystem {
         if (yAxis < deadZone && yAxis > -deadZone) {
             yAxis = 0;
         }
-        
+        System.out.print("Y axis: ");
+        System.out.print(yAxis + "\n");
+        System.out.print("X Axis: ");
+        System.out.print(xAxis + "\n");
+        System.out.print("Z Axis: ");
+        System.out.print(knob + "\n");
         robotDrive.arcadeDrive(yAxis, xAxis);
     }
-    public void setSafety(boolean s) {
-        robotDrive.setSafetyEnabled(s);
+    public void move(double moveValue, double rotateValue) {
+        robotDrive.arcadeDrive(moveValue, rotateValue);
     }
+
     public void stop() {
         robotDrive.stopMotor();
     }

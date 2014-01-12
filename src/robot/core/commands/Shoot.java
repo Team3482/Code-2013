@@ -37,7 +37,6 @@ public class  Shoot extends Command {
         System.out.println("Spin up");
         Robot.shooter.spinUpShooter();
         while(shotsFired < shotsToFire) {
-            System.out.println("Fire");
             Robot.shooter.pushFrisbee();
             shotsFired++;
         }
@@ -52,7 +51,6 @@ public class  Shoot extends Command {
     }
     // Called once after isFinished returns true
     protected void end() {
-        System.out.println("Spin down");
         Robot.shooter.spinDownShooter();
     }
     // Called when another command which requires one or more of the same

@@ -9,14 +9,18 @@
 // it from being updated in the future.
 package robot.core.commands;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.command.Command;
 import robot.core.Robot;
 import robot.core.RobotMap;
-// TODO: remove super quick and dirty code for testing vision
+
 /**
  * @author Westmont Robotics
  */
 public class  Drive extends Command {
+    private boolean spinning = false;
+    private Timer timer;
+    private Joystick j1 = Robot.oi.getJoystick1();
     public Drive() {
         // Use requires() here to declare subsystem dependencies
         // eg. requires(chassis);
@@ -27,15 +31,31 @@ public class  Drive extends Command {
     }
     // Called just before this Command runs the first time
     protected void initialize() {
+        System.out.println("Init");
         Robot.chassis.invertMotors();
-        Robot.chassis.setSafety(true);
+        timer = new Timer();
     }
     // Called repeatedly when this Command is scheduled to run
     protected void execute() {
+        System.out.println("Executing...");
         if(Robot.oi.stopButton.get()) {
             Robot.chassis.stop();
         } else {
-            Robot.chassis.driveWithJoystick(Robot.oi.getJoystick1());
+            System.out.println("Calling drive");
+            Robot.chassis.driveWithJoystick(j1);
+        }
+        
+        // if the button has been pressed and it has been more than 0.1 seconds
+        if(Robot.oi.spinUpButton.get() && timer.get() >= 100000) {
+            timer.reset();
+            spinning = !spinning;
+            if(spinning) {
+                Robot.shooter.spinUpShooter();
+            } else {
+                Robot.shooter.spinDownShooter();
+            }
+        } else if(Robot.oi.shootButton.get()) {
+            Robot.shooter.pushFrisbee();
         }
     }
     // Make this return true when this Command no longer needs to run execute()
@@ -44,11 +64,13 @@ public class  Drive extends Command {
     }
     // Called once after isFinished returns true
     protected void end() {
+        System.out.println("Ended");
         Robot.chassis.stop();
     }
     // Called when another command which requires one or more of the same
     // subsystems is scheduled to run
     protected void interrupted() {
-        end();
+        System.out.println("Interrupted");
+        Robot.chassis.stop();
     }
 }

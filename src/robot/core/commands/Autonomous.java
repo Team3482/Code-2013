@@ -10,6 +10,7 @@
 
 
 package robot.core.commands;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.command.CommandGroup;
 import robot.core.Robot;
 
@@ -36,9 +37,10 @@ public class Autonomous extends CommandGroup {
         // a CommandGroup containing them would require both the chassis and the
         // arm.
         
-        // Turn off motor safety to avoid those annoying error messages
-        Robot.chassis.setSafety(false);
         // Add a new shoot command
+        addSequential(new Move(0.6, 0.0, 2));
+        addSequential(new Move(0.0, 0.4, 1.5));
+        addSequential(new Move(0.4, 0.0, 1));
         addSequential(new Shoot(3));
     }
 }

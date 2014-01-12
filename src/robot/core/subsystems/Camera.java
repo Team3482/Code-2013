@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj.Timer;
 import robot.core.commands.*;
 import edu.wpi.first.wpilibj.image.*;
 import edu.wpi.first.wpilibj.command.Subsystem;
+import edu.wpi.first.wpilibj.PIDSource;
 import com.sun.squawk.util.*;
 /**
  * The Camera subsystem provides vision processing functionality
@@ -218,7 +219,7 @@ public class Camera extends Subsystem {
      * @param img
      * @param topScores
      * @param target 0 => left target, 1 => middle target, 2 => right target
-     * @return
+     * @return value from -1.0 to 1.0
      * 
      */
     public double calculateOffset(int[] topScores, int target) throws NIVisionException {
@@ -240,11 +241,11 @@ public class Camera extends Subsystem {
         if(target == 0) {
             // positions to the right of the center are positive
             // positions to the left of the center are negative
-            return positionsXCenter[0] - imageCenter;
+            return (positionsXCenter[0] - imageCenter)/filtered.getWidth();
         } else if(target == 1) {
-            return positionsXCenter[1] - imageCenter;
+            return (positionsXCenter[1] - imageCenter)/filtered.getWidth();
         } else if(target == 2) {
-            return positionsXCenter[2] - imageCenter;
+            return (positionsXCenter[2] - imageCenter)/filtered.getWidth();
         } else {
             return -1000.0;
         }
