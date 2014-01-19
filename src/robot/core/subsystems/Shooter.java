@@ -11,11 +11,9 @@
 
 package robot.core.subsystems;
 
-import robot.core.RobotMap;
-import robot.core.commands.*;
 import edu.wpi.first.wpilibj.*;
-
 import edu.wpi.first.wpilibj.command.Subsystem;
+import robot.core.RobotMap;
 
 
 /**
@@ -43,6 +41,7 @@ public class Shooter extends Subsystem {
         //setDefaultCommand(new MySpecialCommand());
     }
     public void spinUp() {
+        // Accelerate shooter wheels slowly
         for(int i = 1; i <= 10; i++) {
             wheel1.set((SHOOT_SPEED/10)*i);
             wheel2.set((SHOOT_SPEED/10)*i);
