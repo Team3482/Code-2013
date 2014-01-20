@@ -79,8 +79,6 @@ public class OI {
         spinDownButton = new JoystickButton(joystick1, 4);
         spinDownButton.whenPressed(new SpinDown());
         stopButton = new JoystickButton(joystick1, 2);
-        toggleCylinder = new JoystickButton(joystick1, 9);
-        toggleCylinder.whenPressed(new CylinderExtend());
 
 	    
         // SmartDashboard Buttons
