@@ -55,8 +55,8 @@ public class Chassis extends Subsystem {
         double deadZone = .2;
         double xAxis = s.getAxis(Joystick.AxisType.kX);
         double yAxis = s.getAxis(Joystick.AxisType.kY);
-        System.out.print("Raw input: \n ");
-        System.out.println(xAxis + ", " + yAxis);
+        //System.out.print("Raw input: \n ");
+        //System.out.println(xAxis + ", " + yAxis);
         
         // X sensitivity set by slider, Y sensitivity set by knob
         double slider = SmartDashboard.getNumber("Slider 1");
@@ -72,9 +72,13 @@ public class Chassis extends Subsystem {
         if (yAxis < deadZone && yAxis > -deadZone) {
             yAxis = 0;
         }
-        System.out.print("Dead zone corrected: \n");
-        System.out.println(xAxis + ", " + yAxis);
+        //System.out.print("Dead zone corrected: \n");
+        //System.out.println(xAxis + ", " + yAxis);
         robotDrive.arcadeDrive(yAxis, xAxis);
+    }
+    public void driveWithXboxController(Joystick s) {
+        double leftY = s.getRawAxis(1);
+        double rightX = s.getRawAxis(4);
     }
     public void move(double moveValue, double rotateValue) {
         robotDrive.arcadeDrive(moveValue, rotateValue);

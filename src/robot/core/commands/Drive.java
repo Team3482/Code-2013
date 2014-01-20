@@ -19,7 +19,7 @@ import robot.core.Robot;
  *
  */
 public class  Drive extends Command {
-
+    public Joystick xboxController = Robot.oi.xboxController;
     public Drive() {
         // Use requires() here to declare subsystem dependencies
         // eg. requires(chassis);
@@ -39,7 +39,7 @@ public class  Drive extends Command {
         if(Robot.oi.stopButton.get()) {
             Robot.chassis.stop();
         } else {
-            Robot.chassis.driveWithJoystick(Robot.oi.getJoystick1());
+            Robot.chassis.driveWithXboxController(xboxController);
         }
     }
 

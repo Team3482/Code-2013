@@ -34,11 +34,6 @@ public class Autonomous extends CommandGroup {
         // e.g. if Command1 requires chassis, and Command2 requires arm,
         // a CommandGroup containing them would require both the chassis and the
         // arm.
-        addSequential(new Move(0.8, 0.0, 2.0));
-        addSequential(new SpinUp());
-        addSequential(new PushFrisbee());
-        addSequential(new PushFrisbee());
-        addSequential(new PushFrisbee());
-        addSequential(new SpinDown());
+        //addSequential(new Move(0.8, 0.0, 2.0));
     }
 }
