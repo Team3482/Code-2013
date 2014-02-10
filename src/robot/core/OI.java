@@ -66,7 +66,7 @@ public class OI {
 
 	    
         // SmartDashboard Buttons
-        //SmartDashboard.putData("Shoot", new Shoot());
+        //SmartDashboard.putBoolean("Shoot", new Shoot());
     }
 }
 

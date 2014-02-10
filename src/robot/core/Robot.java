@@ -29,8 +29,10 @@ public class Robot extends IterativeRobot {
 
     Command autonomousCommand;
     Command teleopCommand;
+    Command autoShoot;
 
     public static OI oi;
+    public static Camera camera;
     public static Chassis chassis;
     public static Shooter shooter;
     public static Pneumatics pneumatics;
@@ -41,6 +43,7 @@ public class Robot extends IterativeRobot {
      */
     public void robotInit() {
 	RobotMap.init();
+        camera = new Camera();
         chassis = new Chassis();
         shooter = new Shooter();
         pneumatics = new Pneumatics();
@@ -54,6 +57,7 @@ public class Robot extends IterativeRobot {
         // instantiate the command used for the autonomous/teleop period
         autonomousCommand = new Autonomous();
         teleopCommand = new CylinderExtend();
+        autoShoot = new AutoShoot();
     }
 
     public void autonomousInit() {

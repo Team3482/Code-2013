@@ -37,33 +37,34 @@ public class RobotMap {
         // Constructors
         //     Driving
         /* arguments: (PWM_channel) */
-        chassisLeftFront = new Victor(1);
-	LiveWindow.addActuator("Chassis", "LeftFront", (Victor) chassisLeftFront);
+        chassisLeftFront = new Talon(1);
+	LiveWindow.addActuator("Chassis", "LeftFront", (Talon) chassisLeftFront);
         
-        chassisLeftRear = new Victor(2);
-	LiveWindow.addActuator("Chassis", "LeftRear", (Victor) chassisLeftRear);
+        chassisLeftRear = new Talon(2);
+	LiveWindow.addActuator("Chassis", "LeftRear", (Talon) chassisLeftRear);
         
-        chassisRightFront = new Victor(3);
-	LiveWindow.addActuator("Chassis", "RightFront", (Victor) chassisRightFront);
+        chassisRightFront = new Talon(3);
+	LiveWindow.addActuator("Chassis", "RightFront", (Talon) chassisRightFront);
         
-        chassisRightRear = new Victor(4);
-	LiveWindow.addActuator("Chassis", "RightRear", (Victor) chassisRightRear);
+        chassisRightRear = new Talon(4);
+	LiveWindow.addActuator("Chassis", "RightRear", (Talon) chassisRightRear);
         
         chassisRobotDrive = new RobotDrive(chassisLeftFront, chassisLeftRear,
               chassisRightFront, chassisRightRear);
-        chassisRobotDrive.setSafetyEnabled(true);
+        // TODO: set this to true before testing on the actual robot
+        chassisRobotDrive.setSafetyEnabled(false);
         chassisRobotDrive.setExpiration(0.1);
         chassisRobotDrive.setSensitivity(0.5);
         chassisRobotDrive.setMaxOutput(1.0);
 
         //     Shooter
-        shooterCam = new Victor(5); //PWM pin 5
-	LiveWindow.addActuator("Shooter", "Cam", (Victor) shooterCam);
+        shooterCam = new Talon(5); //PWM pin 5
+	LiveWindow.addActuator("Shooter", "Cam", (Talon) shooterCam);
         
-        shooterWheel1 = new Victor(7);
-	LiveWindow.addActuator("Shooter", "Wheel1", (Victor) shooterWheel1);
-        shooterWheel2 = new Victor(8);
-        LiveWindow.addActuator("Shooter", "Wheel2", (Victor) shooterWheel2);
+        shooterWheel1 = new Talon(7);
+	LiveWindow.addActuator("Shooter", "Wheel1", (Talon) shooterWheel1);
+        shooterWheel2 = new Talon(8);
+        LiveWindow.addActuator("Shooter", "Wheel2", (Talon) shooterWheel2);
         
         //     Compressor
         /* arguments: (pressureSwitchChannel, compressorRelayChannel) */
