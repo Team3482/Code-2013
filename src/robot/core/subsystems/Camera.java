@@ -20,11 +20,11 @@ public class Camera extends Subsystem {
     AxisCamera cam;
     ColorImage colorImg;
     BinaryImage filtered;
-    final int HUE_LOW = 115;
-    final int HUE_HIGH = 140;
-    final int SATURATION_LOW = 215;
+    final int HUE_LOW = 93;
+    final int HUE_HIGH = 169;
+    final int SATURATION_LOW = 195;
     final int SATURATION_HIGH = 255;
-    final int VALUE_LOW = 215;
+    final int VALUE_LOW = 180;
     final int VALUE_HIGH = 255;
     double[][] scores;
     
