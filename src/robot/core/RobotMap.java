@@ -37,17 +37,17 @@ public class RobotMap {
         // Constructors
         //     Driving
         /* arguments: (PWM_channel) */
-        chassisLeftFront = new Talon(1);
-	LiveWindow.addActuator("Chassis", "LeftFront", (Talon) chassisLeftFront);
+        chassisLeftFront = new Victor(1);
+	LiveWindow.addActuator("Chassis", "LeftFront", (Victor) chassisLeftFront);
         
-        chassisLeftRear = new Talon(2);
-	LiveWindow.addActuator("Chassis", "LeftRear", (Talon) chassisLeftRear);
+        chassisLeftRear = new Victor(2);
+	LiveWindow.addActuator("Chassis", "LeftRear", (Victor) chassisLeftRear);
         
-        chassisRightFront = new Talon(3);
-	LiveWindow.addActuator("Chassis", "RightFront", (Talon) chassisRightFront);
+        chassisRightFront = new Victor(3);
+	LiveWindow.addActuator("Chassis", "RightFront", (Victor) chassisRightFront);
         
-        chassisRightRear = new Talon(4);
-	LiveWindow.addActuator("Chassis", "RightRear", (Talon) chassisRightRear);
+        chassisRightRear = new Victor(4);
+	LiveWindow.addActuator("Chassis", "RightRear", (Victor) chassisRightRear);
         
         chassisRobotDrive = new RobotDrive(chassisLeftFront, chassisLeftRear,
               chassisRightFront, chassisRightRear);

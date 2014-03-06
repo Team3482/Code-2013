@@ -13,7 +13,6 @@ package robot.core;
 
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.buttons.*;
-//import robot.core.commands.*;
 
 
 /**
@@ -57,6 +56,8 @@ public class OI {
     public JoystickButton stopButton;
     public JoystickButton toggleCylinder;
     public Joystick xboxController;
+
+	// xbox controller stuffos
 
     public OI() {
         xboxController = new Joystick(1);
