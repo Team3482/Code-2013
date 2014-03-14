@@ -4,9 +4,9 @@
  */
 package robot.core;
 
-import ch.aplu.xboxcontroller.XboxController;
+/*import ch.aplu.xboxcontroller.XboxController;
 import ch.aplu.xboxcontroller.XboxControllerAdapter;
-import ch.aplu.xboxcontroller.XboxControllerListener;
+import ch.aplu.xboxcontroller.XboxControllerListener;*/
 
 /**
  *
@@ -22,7 +22,7 @@ public class XboxControllerWrapper {
 	private final int controllerPoll = 50;
 	// period of the timer that polls the message queue in ms
 	private final int queuePoll = 50;
-	XboxController c = new XboxController(xboxControllerDLL, playerNum, controllerPoll, queuePoll);
+	/*XboxController c = new XboxController(xboxControllerDLL, playerNum, controllerPoll, queuePoll);
 
 	boolean backButton, AButton, BButton, XButton, YButton, dPadPressed;
 	boolean leftBumper, leftThumb, rightBumper, rightThumb, startButton;
@@ -67,5 +67,5 @@ public class XboxControllerWrapper {
 	}
 	public void close() {
 		c.release();
-	}
+	}*/
 }

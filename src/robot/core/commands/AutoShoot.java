@@ -33,7 +33,7 @@ public class AutoShoot extends Command {
         Robot.chassis.stop();
         try {
             Robot.camera.processImage();
-            if(Robot.camera.isVertical()) {
+            if(Robot.camera.foundHorizontal()) {
                 System.out.println("Success");
             } else {
                 System.out.println("Failed :(");
