@@ -10,6 +10,13 @@ import edu.wpi.first.wpilibj.camera.AxisCameraException;
 import edu.wpi.first.wpilibj.image.*;
 import edu.wpi.first.wpilibj.Timer;
 
+/**
+ *
+ * @author
+ * Westmont
+ * Robotics
+ * 
+ */
 public class Camera extends Subsystem {
 	/* The camera subsytem allows for processing of an image to detect both the vertical
 	 * and horizontal vision targets (when present). Image processing here is not real time,
@@ -158,7 +165,7 @@ public class Camera extends Subsystem {
 	/**************************
 	 *    HELPER FUNCTIONS    *
 	 **************************/
-	private void calculateScores(BinaryImage img) throws AxisCameraException, NIVisionException {
+	private void calculateScores(BinaryImage img) throws NIVisionException {
 		/* Calculate the rectangularity score as a percentage, and the vertical/horizontal
 		 * aspect ratios */
 
